@@ -7,18 +7,18 @@ const cors = require('cors');
 
 /* Broken on Yoobee Wifi */
 
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-// const config = require('./config.json');
-//
-// mongoose.connect(`mongodb+srv://${config.mongoDBUser}:${config.mongoDBPassword}@simonscluster-yyrov.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
-//
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', ()=> {
-//     // we're connected!
-//     console.log('conected');
-// });
+const config = require('./config.json');
+
+mongoose.connect(`mongodb+srv://${config.mongoDBUser}:${config.mongoDBPassword}@simonscluster-yyrov.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', ()=> {
+    // we're connected!
+    console.log('conected');
+});
 
 /* Borken ends */
 
@@ -57,8 +57,8 @@ app.get('/product/id=:id', (req, res)=> {
 
 /* Broken at yoobee wifi */
 
-// const Product = requre('./models/product');
-// const Contact = requre('./models/contact');
+const Product = require('./models/product');
+const Contact = require('./models/contact');
 
 /* Broken stops */
 
@@ -80,19 +80,32 @@ app.post('/product/add', (req, res)=> {
 
     /* Broken stops */
 
-    const newName = req.body.name;
-    const newPrice = parseFloat(req.body.price);
+    // const newName = req.body.name;
+    // const newPrice = parseFloat(req.body.price);
+    //
+    // let newId = allProducts[allProducts.length - 1].id + 1;
+    // let newData = {
+    //     id: newId,
+    //     name: newName,
+    //     price: newPrice
+    // }
+    // allProducts.push(newData);
+    // let newDataString = JSON.stringify(allProducts);
+    // fs.writeFileSync('data/products.json', newDataString);
+    // res.send('Product Added');
+});
 
-    let newId = allProducts[allProducts.length - 1].id + 1;
-    let newData = {
-        id: newId,
-        name: newName,
-        price: newPrice
-    }
-    allProducts.push(newData);
-    let newDataString = JSON.stringify(allProducts);
-    fs.writeFileSync('data/products.json', newDataString);
-    res.send('Product Added');
+app.get('/all_db', (req, res)=>{
+    Product.find().then((result)=> {
+        res.send(result)
+    });
+});
+
+app.get('/db_id/id=:id', (req, res)=> {
+    let id = req.params.id;
+    Product.findById(id).then((rez)=> {
+        res.send(rez);
+    });
 });
 
 app.post('/contact', (req, res)=> {
