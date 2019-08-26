@@ -66,17 +66,17 @@ app.post('/product/add', (req, res)=> {
 
     /* Broken at yoobee wifi */
 
-    // const product = new Product({
-    //     _id: new mongoose.Types.ObjectId(),
-    //     name: req.body.name,
-    //     price: req.body.price
-    // });
-    //
-    // product.save().then((result)=> {
-    //     res.send(result);
-    // }).catch((err)=> {
-    //     res.send(err);
-    // });
+    const product = new Product({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+        price: req.body.price
+    });
+
+    product.save().then((result)=> {
+        res.send(result);
+    }).catch((err)=> {
+        res.send(err);
+    });
 
     /* Broken stops */
 
@@ -93,6 +93,20 @@ app.post('/product/add', (req, res)=> {
     // let newDataString = JSON.stringify(allProducts);
     // fs.writeFileSync('data/products.json', newDataString);
     // res.send('Product Added');
+});
+
+app.patch('/product/update/id=:id', (req, res)=> {
+    let id = req.params.id
+    Product.updateOne({
+        _id: id
+    },{
+        name: req.body.name,
+        price: req.body.price
+    }).then((result)=> {
+        res.send(result);
+    }).catch((err)=> {
+        console.log(err);
+    });
 });
 
 app.get('/all_db', (req, res)=>{
