@@ -109,6 +109,15 @@ app.patch('/product/update/id=:id', (req, res)=> {
     });
 });
 
+app.delete('/product/delete/id=:id', (req, res)=>{
+    let id = req.params.id;
+    Product.deleteOne({_id: id}).then((result)=> {
+        res.send(result);
+    }).catch((err)=> {
+        console.log(err);
+    });
+});
+
 app.get('/all_db', (req, res)=>{
     Product.find().then((result)=> {
         res.send(result)
