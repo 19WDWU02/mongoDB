@@ -93,8 +93,7 @@ app.delete('/product/:id', function(req, res){
 
 
 app.post('/users', function(req, res){
-    User.findOne({ username: req.body.username }, function (err, checkUser) {
-        // res.send(checkUser);
+    User.findOne({ username: req.body.username }, function (err, checkUser) {;
         if(checkUser){
             res.send('user already exists');
         } else {
@@ -105,7 +104,6 @@ app.post('/users', function(req, res){
                 email: req.body.email,
                 password: hash
             });
-
             user.save().then(result => {
                 res.send(result);
             }).catch(err => res.send(err));
@@ -114,11 +112,22 @@ app.post('/users', function(req, res){
 })
 
 app.post('/getUser', function(req, res){
-    // if(bcrypt.compareSync('password', hash)){
-    //     console.log('password matches');
-    // } else {
-    //     console.log('password does not match');
-    // }
+    // console.log(req.body.username);
+    // console.log(req.body.password);
+    User.findOne({ username: req.body.username }, function (err, checkUser) {;
+        if(checkUser){
+            if(bcrypt.compareSync(req.body.password, checkUser.password)){
+                console.log('password matches');
+                res.send(checkUser);
+            } else {
+                console.log('password does not match');
+                res.send('invalid password');
+            }
+        } else {
+            res.send('invalid user');
+        }
+    });
+
 })
 
 // Listen to the port number
