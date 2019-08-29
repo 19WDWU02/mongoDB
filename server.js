@@ -15,7 +15,7 @@ const Product = require('./models/products');
 const User = require('./models/users');
 
 // Connect to Mongoose
-mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@cluster0-zd20o.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
+mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
 
 // Test the connection to mongoose
 const db = mongoose.connection;
@@ -93,17 +93,24 @@ app.delete('/product/:id', function(req, res){
 
 
 app.post('/users', function(req, res){
-    const hash = bcrypt.hashSync(req.body.password);
-    const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        username: req.body.username,
-        email: req.body.email,
-        password: hash
-    });
+    User.findOne({ username: req.body.username }, function (err, checkUser) {
+        // res.send(checkUser);
+        if(checkUser){
+            res.send('user already exists');
+        } else {
+            const hash = bcrypt.hashSync(req.body.password);
+            const user = new User({
+                _id: new mongoose.Types.ObjectId(),
+                username: req.body.username,
+                email: req.body.email,
+                password: hash
+            });
 
-    user.save().then(result => {
-        res.send(result);
-    }).catch(err => res.send(err));
+            user.save().then(result => {
+                res.send(result);
+            }).catch(err => res.send(err));
+        }
+    });
 })
 
 app.post('/getUser', function(req, res){
