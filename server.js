@@ -153,29 +153,44 @@ app.post('/contact', (req, res)=> {
 });
 
 app.post('/user/add', (req, res)=> {
-    /* Broken at yoobee wifi */
+    User.findOne({username:req.body.username}, (err, checking)=> {
+        if (checking) {
+            res.send('That user already exists');
+        } else {
+            const hash = bcrypt.hashSync(req.body.password);
+            const user = new User({
+                _id: new mongoose.Types.ObjectId(),
+                username: req.body.username,
+                password: hash,
+            	age: req.body.age,
+            	favColor: req.body.favColor
+            });
 
-    let hash = bcrypt.hashSync(req.body.password);
+            user.save().then((result)=> {
+                res.send(result);
+            }).catch((err)=> {
+                res.send(err);
+            });
+        }
 
-    if (!bcrypt.compareSync('password', hash)) {
-        res.send('fail');
-        return;
-    }
+    })
+});
 
-    const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        username: req.body.username,
-        password: hash,
-    	age: req.body.age,
-    	favColor: req.body.favColor
+app.post('/user/get', (req, res)=> {
+    let username = req.body.username;
+
+
+    User.findOne({username: username}, (err, checkUser)=> {
+        if (checkUser) {
+            if (bcrypt.compareSync(req.body.password, checkUser.password)) {
+                res.send(checkUser);
+            } else {
+                res.send('invalid password');
+            }
+        } else {
+            res.send('invalid user');
+        }
     });
-
-    user.save().then((result)=> {
-        res.send(result);
-    }).catch((err)=> {
-        res.send(err);
-    });
-    /* Broken stops */
 });
 
 // app.get('/product/delete/id=:id', (req, res)=> {
