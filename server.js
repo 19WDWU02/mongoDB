@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 
 /* Broken on Yoobee Wifi */
 
@@ -59,6 +60,7 @@ app.get('/product/id=:id', (req, res)=> {
 
 const Product = require('./models/product');
 const Contact = require('./models/contact');
+const User = require('./models/user');
 
 /* Broken stops */
 
@@ -151,59 +153,74 @@ app.post('/contact', (req, res)=> {
 });
 
 app.post('/user/add', (req, res)=> {
-    let username = req.body.username;
-    let password = req.body.password;
-    let age = req.body.age;
-    let favColor = req.body.favColor;
+    /* Broken at yoobee wifi */
 
-    /* Add user to the database */
+    let hash = bcrypt.hashSync(req.body.password);
 
-    // res.send(newUser);
-});
-
-app.get('/product/delete/id=:id', (req, res)=> {
-    const id = req.params.id;
-    let newData = [];
-    allProducts.map((product)=> {
-        if (product.id != id) {
-            newData.push(product);
-        }
-    });
-    if (newData.length >= 1) {
-        let newDataString = JSON.stringify(newData);
-        fs.writeFileSync('data/products.json', newDataString);
-        res.send('Product deleted');
-    } else {
-        res.send('Product not found');
+    if (!bcrypt.compareSync('password', hash)) {
+        res.send('fail');
+        return;
     }
+
+    const user = new User({
+        _id: new mongoose.Types.ObjectId(),
+        username: req.body.username,
+        password: hash,
+    	age: req.body.age,
+    	favColor: req.body.favColor
+    });
+
+    user.save().then((result)=> {
+        res.send(result);
+    }).catch((err)=> {
+        res.send(err);
+    });
+    /* Broken stops */
 });
 
-app.get('/product/edit/id=:id&name=:name&price=:price', (req, res)=> {
-    let newData = [];
-    let check = false;
-    allproducts.map((product)=> {
-        if (req.params.id == product.id) {
-            if ((req.params.name != product.name) && (req.params.price != product.price)) {
-                check = true;
-                let temData = {
-                    id: product.id,
-                    name: req.params.name,
-                    price: req.params.price
-                }
-                newData.push(temData);
-            }
-        } else {
-            newData.push(product);
-        }
-    });
-    if (check) {
-        let newDataString = JSON.stringify(newData);
-        fs.writeFileSync('data/products.json', newDataString);
-        res.send('Product edited');
-    } else {
-        res.send('No product was found');
-    }
-});
+// app.get('/product/delete/id=:id', (req, res)=> {
+//     const id = req.params.id;
+//     let newData = [];
+//     allProducts.map((product)=> {
+//         if (product.id != id) {
+//             newData.push(product);
+//         }
+//     });
+//     if (newData.length >= 1) {
+//         let newDataString = JSON.stringify(newData);
+//         fs.writeFileSync('data/products.json', newDataString);
+//         res.send('Product deleted');
+//     } else {
+//         res.send('Product not found');
+//     }
+// });
+//
+// app.get('/product/edit/id=:id&name=:name&price=:price', (req, res)=> {
+//     let newData = [];
+//     let check = false;
+//     allproducts.map((product)=> {
+//         if (req.params.id == product.id) {
+//             if ((req.params.name != product.name) && (req.params.price != product.price)) {
+//                 check = true;
+//                 let temData = {
+//                     id: product.id,
+//                     name: req.params.name,
+//                     price: req.params.price
+//                 }
+//                 newData.push(temData);
+//             }
+//         } else {
+//             newData.push(product);
+//         }
+//     });
+//     if (check) {
+//         let newDataString = JSON.stringify(newData);
+//         fs.writeFileSync('data/products.json', newDataString);
+//         res.send('Product edited');
+//     } else {
+//         res.send('No product was found');
+//     }
+// });
 
 app.listen(port, () => {
     console.log(`application is running on port ${port}`);
