@@ -4,6 +4,7 @@ const port = 3000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+//The bcryptjs module is used to hash/encrypt passwords so that we don't include the actual password in our database
 const bcrypt = require('bcryptjs');
 
 // Require the config file
@@ -91,39 +92,60 @@ app.delete('/product/:id', function(req, res){
     });
 });
 
-
+// Register Route
 app.post('/users', function(req, res){
-    User.findOne({ username: req.body.username }, function (err, checkUser) {;
+    // We first want to check the database to see if there is already a user with the username we are registering
+    // The findOne function requires you to specify what column you are searching in and then with what value.
+    // In this example we are searching the User table, for the row which for the column username, mathces the value we type in the front end (req.body.username)
+    User.findOne({ username: req.body.username }, function (err, checkUser) {
+        // checkUser is the result of the findOne() function.
+        // if we find one then checkUser is an object with all the information about the user, but if we don't then checkUser is nothihng/null/empty
         if(checkUser){
+            // the username you are asking for already exists
             res.send('user already exists');
         } else {
+            // the username you are asking for is available
+
+            //hash the password
             const hash = bcrypt.hashSync(req.body.password);
+            // Create a user based on the User Model and fill it with the values from the front end
+            // Make sure to save your hashed password and not the regular one
             const user = new User({
                 _id: new mongoose.Types.ObjectId(),
                 username: req.body.username,
                 email: req.body.email,
                 password: hash
             });
+            // Save the user in the database
             user.save().then(result => {
+                // send the result back to the front end.
                 res.send(result);
             }).catch(err => res.send(err));
         }
     });
 })
 
+// Login Route
 app.post('/getUser', function(req, res){
-    // console.log(req.body.username);
-    // console.log(req.body.password);
+    // Just like the register route, we need to check to see if the username already exists (each username needs to be unique)
     User.findOne({ username: req.body.username }, function (err, checkUser) {;
+        // If it already exists then we want to tell the user to choose another username
         if(checkUser){
+            // A user exists
+
+            // Now that we have checked to see if a username exists in the database, we need to check to see if the password matches
+            // we need to check to see if the password the user is inputting matches the hashed password which is saved in the database
+            // bcrypt.compareSync() checks to if they match
             if(bcrypt.compareSync(req.body.password, checkUser.password)){
-                console.log('password matches');
+                // password matches the hased password and sends back the information about the user
                 res.send(checkUser);
             } else {
-                console.log('password does not match');
+                // We found a user with the username you are asking for, but the password doesn't match
                 res.send('invalid password');
             }
         } else {
+            // A user doesnt exist
+            // The front end user needs to register before logging in
             res.send('invalid user');
         }
     });
