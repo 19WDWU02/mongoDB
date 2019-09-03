@@ -67,6 +67,9 @@ app.get('/allProducts', function(req, res){
 //Get single Product based on ID
 app.post('/product/:id', function(req, res){
     const id = req.params.id;
+    // we need to check to see if the product which we are asking for actually belongs to the
+    // user who is requesting it. If they aren't then we will send them back a 401 error
+    // The same thing is being done with the edit and delete functions
     Product.findById(id, function (err, product) {
         if(product['user_id'] == req.body.userId){
             res.send(product);
@@ -98,9 +101,16 @@ app.patch('/product/:id', function(req, res){
 // Delete a product based on id
 app.delete('/product/:id', function(req, res){
     const id = req.params.id;
-    Product.deleteOne({ _id: id }, function (err) {
-        res.send('deleted');
-    });
+    Product.findById(id, function(err, product){
+        if(product['user_id'] == req.body.userId){
+            Product.deleteOne({ _id: id }, function (err) {
+                res.send('deleted');
+            });
+        } else {
+            res.send('401');
+        }
+    }).catch(err => res.send('cannot find product with that id'));
+
 });
 
 // Register Route
