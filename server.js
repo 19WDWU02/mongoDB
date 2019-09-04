@@ -71,7 +71,8 @@ app.post('/product/add', (req, res)=> {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        user_id: req.body.userId
     });
 
     product.save().then((result)=> {
@@ -79,22 +80,6 @@ app.post('/product/add', (req, res)=> {
     }).catch((err)=> {
         res.send(err);
     });
-
-    /* Broken stops */
-
-    // const newName = req.body.name;
-    // const newPrice = parseFloat(req.body.price);
-    //
-    // let newId = allProducts[allProducts.length - 1].id + 1;
-    // let newData = {
-    //     id: newId,
-    //     name: newName,
-    //     price: newPrice
-    // }
-    // allProducts.push(newData);
-    // let newDataString = JSON.stringify(allProducts);
-    // fs.writeFileSync('data/products.json', newDataString);
-    // res.send('Product Added');
 });
 
 app.patch('/product/update/id=:id', (req, res)=> {
