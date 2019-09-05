@@ -16,6 +16,11 @@ const Product = require('./models/products');
 const User = require('./models/users');
 
 // Connect to Mongoose
+// To get the url to connect with you need to first have a cluster on mongodb, as well as a username and password for a user that has read and write permissions.
+// In our config.json we have a MONGO_USER, MONGO_PASSWORD AND MONGO_CLUSTER_NAME. You can find all of these through mongodb
+// you also need to tell it what database are you wanting to connect to. In the example bellow we are connecting to the shop database.
+// You will need to replace that with the name of the database you are wanting to connect to.
+// You do NOT need to create the database and tables on mongoDB itself, mongoose will do it for you. If it can't find the database or tables you are wanting to connect to, then it will create them for you.
 mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
 
 // Test the connection to mongoose
@@ -174,7 +179,9 @@ app.post('/getUser', function(req, res){
 })
 
 // Listen to the port number
+// This NEEDS to be at the end of your file, other wise you won't see any of the errors which come up
 app.listen(port, () => {
+    // This will clear the console
     console.clear();
     console.log(`application is running on port ${port}`)
 });
