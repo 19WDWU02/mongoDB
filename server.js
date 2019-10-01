@@ -69,6 +69,18 @@ app.get('/allProducts', function(req, res){
     })
 })
 
+app.get('/product/:id', function(req, res) {
+    const id = req.params.id;
+
+    Product.findById(id, function(err, product) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(product);
+        }
+    });
+})
+
 //Get single Product based on ID
 app.post('/product/:id', function(req, res){
     const id = req.params.id;
