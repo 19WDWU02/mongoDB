@@ -1,26 +1,24 @@
 const express = require('express');
 const app = express();
-
+const port = 3000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 //The bcryptjs module is used to hash/encrypt passwords so that we don't include the actual password in our database
 const bcrypt = require('bcryptjs');
 
-// Listen to the port number
-// This NEEDS to be at the end of your file, other wise you won't see any of the errors which come up
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), function(){
-    console.log('Server is running on port '+app.get('port'));
-})
-
 // Require the config file
 // const config = require('./config.json');
 
 // Get the Model for our Product
-// const Product = require('./models/products');
+const Product = require('./models/products');
 // Get the Model for our Users
-// const User = require('./models/users');
+const User = require('./models/users');
+
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function(){
+    console.log('Server is running on port '+app.get('port'));
+})
 
 // Connect to Mongoose
 // To get the url to connect with you need to first have a cluster on mongodb, as well as a username and password for a user that has read and write permissions.
@@ -28,21 +26,21 @@ app.listen(app.get('port'), function(){
 // you also need to tell it what database are you wanting to connect to. In the example bellow we are connecting to the shop database.
 // You will need to replace that with the name of the database you are wanting to connect to.
 // You do NOT need to create the database and tables on mongoDB itself, mongoose will do it for you. If it can't find the database or tables you are wanting to connect to, then it will create them for you.
-// mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
 
 // Test the connection to mongoose
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//   console.log('we are connected to mongo db');
-// });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('we are connected to mongo db');
+});
 
 // Convert our json data which gets sent into JS so we can process it
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 
 // Allow Cross Origin requests, ie http to https requests
-// app.use(cors());
+app.use(cors());
 
 // Create a console message showing us what request we are asking for
 app.use(function(req, res, next){
