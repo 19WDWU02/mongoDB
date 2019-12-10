@@ -1,11 +1,18 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 //The bcryptjs module is used to hash/encrypt passwords so that we don't include the actual password in our database
 const bcrypt = require('bcryptjs');
+
+// Listen to the port number
+// This NEEDS to be at the end of your file, other wise you won't see any of the errors which come up
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function(){
+    console.log('Server is running on port '+app.get('port'));
+})
 
 // Require the config file
 // const config = require('./config.json');
@@ -177,11 +184,3 @@ app.post('/getUser', function(req, res){
     });
 
 })
-
-// Listen to the port number
-// This NEEDS to be at the end of your file, other wise you won't see any of the errors which come up
-app.listen(port, () => {
-    // This will clear the console
-    // console.clear();
-    console.log(`application is running on port ${port}`)
-});
