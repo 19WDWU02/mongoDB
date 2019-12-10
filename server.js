@@ -21,7 +21,7 @@ const User = require('./models/users');
 // you also need to tell it what database are you wanting to connect to. In the example bellow we are connecting to the shop database.
 // You will need to replace that with the name of the database you are wanting to connect to.
 // You do NOT need to create the database and tables on mongoDB itself, mongoose will do it for you. If it can't find the database or tables you are wanting to connect to, then it will create them for you.
-mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER_NAME}.mongodb.net/shop?retryWrites=true&w=majority`, {useNewUrlParser: true});
 
 // Test the connection to mongoose
 const db = mongoose.connection;
